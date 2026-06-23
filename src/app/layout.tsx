@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Budget App",
-  description: "Monthly budget planner - track income, expenses & savings",
+  title: "FinanceFingerprint.ai — Smart Personal Finance Tools",
+  description: "Take control of your finances with intelligent budgeting, expense tracking, and investment planning tools. Your financial fingerprint, perfected.",
 };
 
 export default function RootLayout({
