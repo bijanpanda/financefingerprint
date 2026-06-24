@@ -48,6 +48,7 @@ function HomeContent() {
           <div className="flex items-center gap-6">
             <a href="#features" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">Features</a>
             <a href="#tools" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">Tools</a>
+            <Link href="/insights" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">FinPrint Insights</Link>
             <a href="#about" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">About</a>
             {user ? (
               <div className="flex items-center gap-4">
