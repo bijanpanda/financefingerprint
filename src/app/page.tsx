@@ -1,14 +1,25 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { signOut } from "@/lib/auth";
 
-export default function Home() {
+function HomeContent() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [logoutMessage, setLogoutMessage] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (searchParams.get("logout") === "success") {
+      setLogoutMessage(true);
+      window.history.replaceState({}, "", "/");
+      setTimeout(() => setLogoutMessage(false), 5000);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -69,7 +80,7 @@ export default function Home() {
                         Budget Dashboard
                       </Link>
                       <button
-                        onClick={() => { signOut(); setMenuOpen(false); }}
+                        onClick={() => { signOut().then(() => { setMenuOpen(false); setLogoutMessage(true); setTimeout(() => setLogoutMessage(false), 5000); }); }}
                         className="flex items-center gap-2 w-full px-4 py-2.5 text-sm text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -94,6 +105,21 @@ export default function Home() {
           </div>
         </div>
       </nav>
+
+      {/* Logout success message */}
+      {logoutMessage && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-50 border border-emerald-300 text-emerald-800 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 text-sm font-medium animate-fade-in">
+          <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          You have been successfully logged out.
+          <button onClick={() => setLogoutMessage(false)} className="ml-2 text-emerald-600 hover:text-emerald-800">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      )}
 
       {/* Hero Section */}
       <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30">
@@ -347,5 +373,13 @@ export default function Home() {
         </div>
       </footer>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full" /></div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

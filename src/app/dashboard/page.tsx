@@ -75,7 +75,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!authLoading && !user) {
-      router.replace("/login");
+      router.replace("/");
       return;
     }
     if (user) loadData();
@@ -260,7 +260,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-4">
             <span className="text-sm text-emerald-100">{user?.email}</span>
             <button
-              onClick={() => signOut().then(() => router.push("/"))}
+              onClick={() => signOut().then(() => router.push("/?logout=success"))}
               className="text-sm px-3 py-1.5 rounded-xl text-emerald-100 hover:bg-white/10 transition-colors"
             >
               Sign Out
