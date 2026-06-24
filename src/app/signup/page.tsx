@@ -7,6 +7,20 @@ import { signUp, signInWithGoogle } from "@/lib/auth";
 import { Currency } from "@/types";
 import { CURRENCIES } from "@/utils/currency";
 
+function getFriendlySignupError(err: unknown): string {
+  const code = (err as { code?: string })?.code || "";
+  switch (code) {
+    case "auth/email-already-in-use":
+      return "An account with this email already exists. Try signing in.";
+    case "auth/weak-password":
+      return "Password must be at least 6 characters.";
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    default:
+      return "Sign up failed. Please try again.";
+  }
+}
+
 export default function SignupPage() {
   const router = useRouter();
   const [name, setName] = useState("");
@@ -24,7 +38,7 @@ export default function SignupPage() {
       await signUp(email, password, name, currency);
       router.push("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Sign up failed");
+      setError(getFriendlySignupError(err));
     } finally {
       setLoading(false);
     }
@@ -37,7 +51,7 @@ export default function SignupPage() {
       await signInWithGoogle(currency);
       router.push("/dashboard");
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Google sign in failed");
+      setError(getFriendlySignupError(err));
     } finally {
       setLoading(false);
     }

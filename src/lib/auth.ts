@@ -4,6 +4,7 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut as firebaseSignOut,
+  sendPasswordResetEmail,
   updateProfile,
 } from "firebase/auth";
 import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
@@ -45,4 +46,8 @@ export async function signInWithGoogle(currency: Currency) {
 
 export async function signOut() {
   return firebaseSignOut(auth);
+}
+
+export async function resetPassword(email: string) {
+  return sendPasswordResetEmail(auth, email);
 }
