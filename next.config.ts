@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // firebase-admin ships ESM in a way Next.js's bundler mishandles (ERR_REQUIRE_ESM
+  // at runtime on Vercel) — keep it external so it's loaded via native require() instead.
+  serverExternalPackages: ["firebase-admin"],
   async headers() {
     return [
       {
