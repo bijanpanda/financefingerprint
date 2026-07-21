@@ -116,7 +116,7 @@ export default function TransactionsPage() {
   if (authLoading || loading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <div className="animate-spin h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full" />
+        <div className="animate-spin h-8 w-8 border-4 border-slate-800 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -127,13 +127,13 @@ export default function TransactionsPage() {
         <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
           <h1 className="text-xl font-bold text-gray-800">Budget App</h1>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard" className="text-sm text-blue-600 hover:underline font-medium">
+            <Link href="/dashboard" className="text-sm text-teal-600 hover:underline font-medium">
               Dashboard
             </Link>
             <span className="text-sm text-gray-500">{user?.email}</span>
             <button
               onClick={() => signOut().then(() => router.push("/login"))}
-              className="text-sm text-gray-500 hover:text-red-600"
+              className="text-sm text-gray-500 hover:text-rose-600"
             >
               Sign Out
             </button>

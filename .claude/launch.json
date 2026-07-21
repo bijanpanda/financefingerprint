@@ -3,9 +3,11 @@
   "configurations": [
     {
       "name": "budget-app",
+      "cwd": "/Users/bijanpanda/Desktop/Personal/Trainings/budget-app",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3000
+      "port": 3100,
+      "autoPort": true
     }
   ]
 }

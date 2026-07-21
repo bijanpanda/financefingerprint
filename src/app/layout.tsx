@@ -14,8 +14,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "FinanceFingerprint.ai — Smart Personal Finance Tools",
-  description: "Take control of your finances with intelligent budgeting, expense tracking, and investment planning tools. Your financial fingerprint, perfected.",
+  title: "Vestrofin — Smart Personal Finance Tools",
+  description: "Take control of your finances with intelligent budgeting, expense tracking, and investment planning tools. Your finances, perfected.",
 };
 
 export default function RootLayout({

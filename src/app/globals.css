@@ -1,8 +1,27 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f0fdf4;
-  --foreground: #1e293b;
+  --background: #f7f8fa;
+  --foreground: #0f172a;
+  --surface-0: #ffffff;
+  --surface-1: #f7f8fa;
+  --fill-success: #0f172a;
+  --fill-danger: #ef4444;
+  --fill-blue: #3b82f6;
+  --text-muted: #94a3b8;
+  --bg-success: #0f172a;
+  --border-default: #e2e8f0;
+
+  /* Brand / interactive (was emerald) */
+  --brand-dark: #0f172a;
+  --brand-dark-hover: #1e293b;
+
+  /* Data-viz / accent palette */
+  --accent-teal: #0d9488;
+  --accent-purple: #8b5cf6;
+  --accent-amber: #f59e0b;
+  --accent-rose: #f472b6;
+  --accent-blue: #3b82f6;
 }
 
 @theme inline {
@@ -13,36 +32,273 @@
 }
 
 body {
-  background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 25%, #eff6ff 50%, #eef2ff 75%, #f5f3ff 100%);
+  background: var(--background);
   color: var(--foreground);
   font-family: 'Geist', system-ui, -apple-system, sans-serif;
   min-height: 100vh;
 }
 
+/* Pastel mesh background for marketing / entry surfaces (homepage hero, auth pages) */
+.hero-gradient-bg {
+  background:
+    radial-gradient(ellipse 80% 60% at 15% 20%, rgba(244, 114, 182, 0.35), transparent 60%),
+    radial-gradient(ellipse 70% 60% at 85% 30%, rgba(253, 186, 116, 0.35), transparent 60%),
+    radial-gradient(ellipse 70% 70% at 50% 90%, rgba(244, 114, 182, 0.25), transparent 60%),
+    linear-gradient(135deg, #fdf9f5 0%, #fefcfa 50%, #fdf6f0 100%);
+}
+
 .gradient-header {
-  background: linear-gradient(135deg, #059669 0%, #0d9488 40%, #0891b2 70%, #4f46e5 100%);
-  box-shadow: 0 4px 20px rgba(5, 150, 105, 0.3);
+  background: linear-gradient(135deg, var(--brand-dark) 0%, var(--brand-dark-hover) 100%);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.25);
 }
 
 .gradient-btn {
-  background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0891b2 100%);
-  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.25);
+  background: linear-gradient(135deg, var(--brand-dark-hover) 0%, var(--brand-dark) 100%);
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.2);
 }
 
 .gradient-btn:hover {
-  background: linear-gradient(135deg, #047857 0%, #0f766e 50%, #0e7490 100%);
-  box-shadow: 0 4px 12px rgba(5, 150, 105, 0.35);
+  background: linear-gradient(135deg, #334155 0%, #1e293b 100%);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
 }
 
 .nav-sidebar {
-  background: linear-gradient(180deg, #064e3b 0%, #1e3a5f 50%, #1e1b4b 100%);
-  box-shadow: 2px 0 15px rgba(6, 78, 59, 0.2);
+  background: var(--surface-1);
+  border-right: 1px solid var(--border-default);
 }
 
 .glass-card {
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.02);
+  background: rgba(255, 255, 255, 0.97);
+  border: 1px solid rgba(15, 23, 42, 0.05);
+  box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05), 0 0 0 1px rgba(15, 23, 42, 0.02);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes spin-reverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--accent-teal) 0%, var(--accent-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.profile-input {
+  display: block;
+  width: 100%;
+  padding: 10px 14px;
+  border: 2px solid #d1d5db !important;
+  border-radius: 14px;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.85);
+  color: #1e293b;
+  -webkit-appearance: none;
+}
+
+.profile-input:focus {
+  border-color: var(--accent-teal) !important;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.15), 0 2px 8px rgba(15, 23, 42, 0.08);
+}
+
+.profile-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  background: linear-gradient(135deg, #0f172a 0%, #134e4a 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: 0.01em;
+}
+
+.animate-spin-slow {
+  animation: spin-slow 3s linear infinite;
+}
+
+.animate-spin-reverse {
+  animation: spin-reverse 2s linear infinite;
+}
+
+/* === DNA Animated Background === */
+
+.dna-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* --- Double helixes --- */
+
+.dna-helix-left {
+  position: absolute;
+  left: -2%;
+  top: -5%;
+  width: 160px;
+  height: 110%;
+  opacity: 0.14;
+  animation: helix-bob 14s ease-in-out infinite;
+}
+
+.dna-helix-right {
+  position: absolute;
+  right: -1%;
+  top: -10%;
+  width: 140px;
+  height: 115%;
+  opacity: 0.11;
+  animation: helix-bob 18s ease-in-out infinite reverse;
+}
+
+.helix-stroke-a {
+  stroke: #0d9488;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  animation: strand-dash 8s linear infinite;
+  stroke-dasharray: 30 15;
+}
+
+.helix-stroke-b {
+  stroke: #f59e0b;
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  animation: strand-dash 8s linear infinite reverse;
+  stroke-dasharray: 30 15;
+}
+
+.base-pair-line {
+  stroke: #8b5cf6;
+  stroke-width: 2;
+  stroke-linecap: round;
+  opacity: 0.6;
+}
+
+.base-pair-group {
+  animation: pair-pop 3s ease-in-out infinite;
+}
+
+.dot-green { fill: #2dd4bf; }
+.dot-cyan { fill: #fb923c; }
+.dot-purple { fill: #a78bfa; }
+
+/* --- Floating bubbles --- */
+
+.dna-bubble {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: bubble-rise linear infinite;
+}
+
+.dna-bubble-1 { width: 12px; height: 12px; background: #5eead4; left: 8%;  bottom: -5%; animation-duration: 16s; animation-delay: 0s; }
+.dna-bubble-2 { width: 18px; height: 18px; background: #fdba74; left: 15%; bottom: -5%; animation-duration: 20s; animation-delay: 3s; }
+.dna-bubble-3 { width: 10px; height: 10px; background: #c4b5fd; right: 12%; bottom: -5%; animation-duration: 14s; animation-delay: 1s; }
+.dna-bubble-4 { width: 22px; height: 22px; background: #f9a8d4; right: 20%; bottom: -5%; animation-duration: 22s; animation-delay: 5s; }
+.dna-bubble-5 { width: 8px;  height: 8px;  background: #5eead4; left: 40%; bottom: -5%; animation-duration: 18s; animation-delay: 7s; }
+.dna-bubble-6 { width: 14px; height: 14px; background: #a78bfa; right: 35%; bottom: -5%; animation-duration: 15s; animation-delay: 2s; }
+.dna-bubble-7 { width: 16px; height: 16px; background: #fdba74; left: 60%; bottom: -5%; animation-duration: 19s; animation-delay: 9s; }
+.dna-bubble-8 { width: 10px; height: 10px; background: #f9a8d4; right: 50%; bottom: -5%; animation-duration: 17s; animation-delay: 4s; }
+
+/* --- Floating emoji icons --- */
+
+.dna-float-icon {
+  position: absolute;
+  font-size: 28px;
+  opacity: 0;
+  animation: icon-drift 20s ease-in-out infinite;
+  filter: grayscale(0.2);
+}
+
+.dna-icon-1 { left: 5%;  top: 15%; animation-delay: 0s;  font-size: 36px; }
+.dna-icon-2 { right: 8%; top: 30%; animation-delay: 4s;  font-size: 24px; }
+.dna-icon-3 { left: 12%; top: 65%; animation-delay: 8s;  font-size: 22px; }
+.dna-icon-4 { right: 6%; top: 70%; animation-delay: 12s; font-size: 30px; }
+.dna-icon-5 { left: 7%;  top: 40%; animation-delay: 16s; font-size: 26px; }
+
+/* --- Keyframes --- */
+
+@keyframes helix-bob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-25px) rotate(1deg); }
+  50% { transform: translateY(-40px) rotate(0deg); }
+  75% { transform: translateY(-15px) rotate(-1deg); }
+}
+
+@keyframes strand-dash {
+  to { stroke-dashoffset: -90; }
+}
+
+@keyframes pair-pop {
+  0%, 100% { opacity: 0.4; transform: scaleX(1); }
+  50% { opacity: 1; transform: scaleX(1.15); }
+}
+
+@keyframes bubble-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.2;
+    transform: translateY(-8vh) scale(0.8);
+  }
+  50% {
+    opacity: 0.14;
+    transform: translateY(-50vh) scale(1) translateX(20px);
+  }
+  90% {
+    opacity: 0.06;
+    transform: translateY(-95vh) scale(1.1) translateX(-10px);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-105vh) scale(0.6);
+  }
+}
+
+@keyframes icon-drift {
+  0%, 100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.7) rotate(-10deg);
+  }
+  8% {
+    opacity: 0.15;
+    transform: translateY(-5px) scale(1) rotate(0deg);
+  }
+  20% {
+    opacity: 0.12;
+    transform: translateY(-15px) scale(1.05) rotate(5deg);
+  }
+  35% {
+    opacity: 0.08;
+    transform: translateY(-8px) scale(0.95) rotate(-3deg);
+  }
+  45% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8) rotate(8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(0) scale(0.7) rotate(-10deg);
+  }
 }

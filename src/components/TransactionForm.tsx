@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { forwardRef, useState } from "react";
 import { LineItem, ExpenseItem, ExpenseSubHead } from "@/types";
 import { EXPENSE_SUBHEAD_ORDER } from "@/utils/defaults";
 
@@ -26,25 +26,31 @@ interface Props {
   }) => void;
 }
 
-export default function TransactionForm({ incomeItems, expenseItems, savingsItems, onSubmit }: Props) {
+const inputClass =
+  "w-full px-3 text-sm border border-slate-200 rounded-xl bg-[var(--surface-1)] focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none h-[38px]";
+
+const TransactionForm = forwardRef<HTMLDivElement, Props>(function TransactionForm(
+  { incomeItems, expenseItems, savingsItems, onSubmit },
+  ref
+) {
   const today = new Date().toISOString().split("T")[0];
   const [date, setDate] = useState(today);
   const [amount, setAmount] = useState("");
   const [merchant, setMerchant] = useState("");
-  const [comments, setComments] = useState("");
+  const [notes, setNotes] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
   const [error, setError] = useState("");
 
   const options: BudgetOption[] = [
     ...incomeItems.map((i) => ({ id: i.id, name: i.name, type: "income" as const })),
-    ...expenseItems.map((i) => ({ id: i.id, name: `${i.subHead} - ${i.name}`, type: "expense" as const, subHead: i.subHead })),
+    ...expenseItems.map((i) => ({ id: i.id, name: `${i.subHead} — ${i.name}`, type: "expense" as const, subHead: i.subHead })),
   ];
 
   function resetForm() {
     setDate(today);
     setAmount("");
     setMerchant("");
-    setComments("");
+    setNotes("");
     setSelectedItem("");
     setError("");
   }
@@ -53,21 +59,10 @@ export default function TransactionForm({ incomeItems, expenseItems, savingsItem
     e.preventDefault();
     setError("");
 
-    if (!selectedItem) {
-      setError("Please select a Budget Item.");
-      return;
-    }
-
+    if (!selectedItem) { setError("Please select a category."); return; }
     const parsedAmount = parseFloat(amount);
-    if (!parsedAmount || parsedAmount <= 0) {
-      setError("Amount must be a positive number.");
-      return;
-    }
-
-    if (date > today) {
-      setError("Date cannot be in the future.");
-      return;
-    }
+    if (!parsedAmount || parsedAmount <= 0) { setError("Amount must be a positive number."); return; }
+    if (date > today) { setError("Date cannot be in the future."); return; }
 
     const opt = options.find((o) => o.id === selectedItem);
     if (!opt) return;
@@ -76,7 +71,7 @@ export default function TransactionForm({ incomeItems, expenseItems, savingsItem
       date,
       amount: parsedAmount,
       merchantName: merchant,
-      comments,
+      comments: notes,
       linkedItemId: opt.id,
       linkedItemType: opt.type,
       linkedSubHead: opt.subHead,
@@ -86,65 +81,64 @@ export default function TransactionForm({ incomeItems, expenseItems, savingsItem
   }
 
   return (
-    <form onSubmit={handleSubmit} className="glass-card rounded-2xl p-5">
-      <h3 className="text-base font-semibold mb-4 text-gray-800">Monthly Expense Tracker</h3>
+    <div ref={ref} className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
+      <h3 className="text-base font-semibold text-slate-800 mb-3">Log a transaction</h3>
 
       {error && (
-        <div className="bg-rose-50 text-rose-600 p-3 rounded-xl mb-4 text-sm">{error}</div>
+        <div className="bg-rose-50 text-rose-600 px-3 py-2 rounded-lg mb-3 text-xs">{error}</div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Date <span className="text-rose-500">*</span></label>
-          <input
-            type="date"
-            required
-            max={today}
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
+      <form onSubmit={handleSubmit} className="space-y-2.5">
+        {/* Row 1: Date + Amount */}
+        <div className="grid grid-cols-2 gap-2">
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Date <span className="text-rose-400">*</span></label>
+            <input
+              type="date"
+              required
+              max={today}
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-medium text-slate-500 mb-1">Amount <span className="text-rose-400">*</span></label>
+            <input
+              type="number"
+              required
+              min="0.01"
+              step="0.01"
+              value={amount}
+              onChange={(e) => { const v = e.target.value; if (v === "" || parseFloat(v) >= 0) setAmount(v); }}
+              placeholder="0.00"
+              className={inputClass}
+            />
+          </div>
         </div>
+
+        {/* Merchant */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Amount <span className="text-rose-500">*</span></label>
-          <input
-            type="number"
-            required
-            min="0.01"
-            step="0.01"
-            value={amount}
-            onChange={(e) => {
-              const val = e.target.value;
-              if (val === "" || parseFloat(val) >= 0) setAmount(val);
-            }}
-            placeholder="0.00"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-          />
-        </div>
-        <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">Merchant Name</label>
+          <label className="block text-xs font-medium text-slate-500 mb-1">Merchant</label>
           <input
             type="text"
-            required
             value={merchant}
             onChange={(e) => setMerchant(e.target.value)}
             placeholder="e.g. Amazon, Swiggy"
-            className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className={inputClass}
           />
         </div>
+
+        {/* Category */}
         <div>
-          <label className="block text-xs font-medium text-gray-500 mb-1">
-            Budget Item <span className="text-rose-500">*</span>
-          </label>
+          <label className="block text-xs font-medium text-slate-500 mb-1">Category <span className="text-rose-400">*</span></label>
           <select
             required
             value={selectedItem}
             onChange={(e) => { setSelectedItem(e.target.value); setError(""); }}
-            className={`w-full px-3 py-2 border rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent ${
-              !selectedItem && error ? "border-rose-400 bg-rose-50" : "border-gray-200"
-            }`}
+            className={`${inputClass} ${!selectedItem && error ? "border-rose-400 bg-rose-50" : ""}`}
           >
-            <option value="">Select item...</option>
+            <option value="">Select category...</option>
             <optgroup label="Income">
               {incomeItems.map((i) => (
                 <option key={i.id} value={i.id}>{i.name}</option>
@@ -163,34 +157,28 @@ export default function TransactionForm({ incomeItems, expenseItems, savingsItem
             })}
           </select>
         </div>
-      </div>
 
-      <div className="mt-3">
-        <label className="block text-xs font-medium text-gray-500 mb-1">Comments <span className="text-gray-400">(optional)</span></label>
-        <textarea
-          value={comments}
-          onChange={(e) => setComments(e.target.value)}
-          placeholder="Add any notes about this transaction..."
-          rows={2}
-          className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent resize-none"
-        />
-      </div>
+        {/* Notes */}
+        <div>
+          <label className="block text-xs font-medium text-slate-500 mb-1">Notes <span className="text-slate-300">(optional)</span></label>
+          <textarea
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Any notes about this transaction..."
+            rows={2}
+            className="w-full px-3 py-2 text-sm border border-slate-200 rounded-xl bg-[var(--surface-1)] focus:ring-2 focus:ring-teal-400 focus:border-transparent outline-none resize-none text-sm"
+          />
+        </div>
 
-      <div className="flex items-center gap-3 mt-4">
         <button
           type="submit"
-          className="px-5 py-2 gradient-btn text-white rounded-xl text-sm font-medium shadow-sm"
+          className="w-full h-[36px] bg-[var(--fill-success)] hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition-colors"
         >
-          Log Transaction
+          Log transaction
         </button>
-        <button
-          type="button"
-          onClick={resetForm}
-          className="px-5 py-2 border border-gray-300 text-gray-600 rounded-xl text-sm font-medium hover:bg-gray-50"
-        >
-          Cancel
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
-}
+});
+
+export default TransactionForm;

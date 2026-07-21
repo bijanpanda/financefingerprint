@@ -17,6 +17,8 @@ function getFriendlyError(err: unknown): string {
       return "Please enter a valid email address.";
     case "auth/too-many-requests":
       return "Too many failed attempts. Please try again later.";
+    case "auth/email-not-verified":
+      return "Please verify your email first. We resent the activation link — check your inbox.";
     default:
       return "Sign in failed. Please try again.";
   }
@@ -33,17 +35,31 @@ export default function LoginPage() {
   const [forgotEmail, setForgotEmail] = useState("");
   const [forgotMessage, setForgotMessage] = useState("");
   const [forgotError, setForgotError] = useState("");
+  const [verifiedBanner, setVerifiedBanner] = useState<"success" | "expired" | "invalid" | "error" | null>(null);
 
   useEffect(() => {
-    if (!authLoading && user) {
+    const params = new URLSearchParams(window.location.search);
+    const v = params.get("verified");
+    if (v === "true") setVerifiedBanner("success");
+    else if (v === "expired") setVerifiedBanner("expired");
+    else if (v === "invalid") setVerifiedBanner("invalid");
+    else if (v === "error") setVerifiedBanner("error");
+    if (v) {
+      const t = setTimeout(() => setVerifiedBanner(null), 7000);
+      return () => clearTimeout(t);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!authLoading && user && user.emailVerified) {
       router.replace("/dashboard");
     }
   }, [user, authLoading, router]);
 
-  if (authLoading || user) {
+  if (authLoading || (user && user.emailVerified)) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30">
-        <div className="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full" />
+      <div className="flex items-center justify-center min-h-screen hero-gradient-bg">
+        <div className="animate-spin h-8 w-8 border-4 border-slate-800 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -66,7 +82,8 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      await signInWithGoogle("USD");
+      // Currency/region detected server-side; signInWithGoogle checks existing user first
+      await signInWithGoogle("INR", "IN");
       router.push("/dashboard");
     } catch (err: unknown) {
       setError(getFriendlyError(err));
@@ -99,20 +116,39 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30">
+    <div className="flex items-center justify-center min-h-screen px-4 hero-gradient-bg">
       <div className="w-full max-w-md glass-card rounded-2xl p-8">
         <div className="flex items-center justify-center gap-2 mb-2">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
             </svg>
           </div>
-          <span className="text-xl font-bold text-slate-800">Finance<span className="text-emerald-600">Fingerprint</span></span>
+          <span className="text-xl font-bold text-slate-900">Vestro<span className="text-slate-500">fin</span></span>
         </div>
 
         {!showForgot ? (
           <>
             <h1 className="text-2xl font-bold text-center mb-6">Sign In</h1>
+
+            {verifiedBanner === "success" && (
+              <div className="bg-teal-50 text-teal-700 p-3 rounded-xl mb-4 text-sm flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Account activated! Sign in to get started.
+              </div>
+            )}
+            {(verifiedBanner === "expired" || verifiedBanner === "invalid" || verifiedBanner === "error") && (
+              <div className="bg-rose-50 text-rose-600 p-3 rounded-xl mb-4 text-sm flex items-center gap-2">
+                <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {verifiedBanner === "expired"
+                  ? "This verification link has expired. Sign in below and we'll send a fresh one."
+                  : "This verification link is invalid or already used. Please sign in to request a new one."}
+              </div>
+            )}
 
             {error && (
               <div className="bg-rose-50 text-rose-600 p-3 rounded-xl mb-4 text-sm flex items-center gap-2">
@@ -131,7 +167,7 @@ export default function LoginPage() {
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <div>
@@ -140,7 +176,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => { setShowForgot(true); setForgotEmail(email); setError(""); }}
-                    className="text-xs text-emerald-600 hover:text-emerald-700 font-medium"
+                    className="text-xs text-teal-600 hover:text-teal-700 font-medium"
                   >
                     Forgot Password?
                   </button>
@@ -150,7 +186,7 @@ export default function LoginPage() {
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <button
@@ -184,7 +220,7 @@ export default function LoginPage() {
 
             <p className="text-center text-sm text-gray-600 mt-6">
               Don&apos;t have an account?{" "}
-              <Link href="/signup" className="text-emerald-600 font-medium hover:underline">
+              <Link href="/signup" className="text-teal-600 font-medium hover:underline">
                 Sign Up
               </Link>
             </p>
@@ -206,7 +242,7 @@ export default function LoginPage() {
             )}
 
             {forgotMessage && (
-              <div className="bg-emerald-50 text-emerald-700 p-3 rounded-xl mb-4 text-sm flex items-center gap-2">
+              <div className="bg-teal-50 text-teal-700 p-3 rounded-xl mb-4 text-sm flex items-center gap-2">
                 <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -223,7 +259,7 @@ export default function LoginPage() {
                   value={forgotEmail}
                   onChange={(e) => setForgotEmail(e.target.value)}
                   placeholder="Enter your registered email"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                 />
               </div>
               <button
@@ -236,7 +272,7 @@ export default function LoginPage() {
 
             <button
               onClick={() => { setShowForgot(false); setForgotError(""); setForgotMessage(""); }}
-              className="w-full mt-4 text-sm text-emerald-600 font-medium hover:underline text-center"
+              className="w-full mt-4 text-sm text-teal-600 font-medium hover:underline text-center"
             >
               ← Back to Sign In
             </button>

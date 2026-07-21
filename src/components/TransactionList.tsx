@@ -32,13 +32,17 @@ export default function TransactionList({ transactions, currency, onDelete }: Pr
         </thead>
         <tbody>
           {transactions.map((txn) => (
-            <tr key={txn.id} className="border-t border-gray-50 hover:bg-slate-50/50 transition-colors">
+            <tr key={txn.id} className={`border-t border-gray-50 transition-colors ${
+              txn.linkedItemType === "income"
+                ? "bg-teal-50/40 hover:bg-teal-50/70"
+                : "hover:bg-slate-50/50"
+            }`}>
               <td className="px-4 py-2.5 text-[13px] text-slate-600">{txn.date}</td>
               <td className="px-4 py-2.5 text-[13px] text-slate-700 font-medium">{txn.merchantName}</td>
               <td className="px-4 py-2.5">
                 <span className={`inline-block px-2 py-0.5 rounded-full text-[11px] font-medium ${
                   txn.linkedItemType === "income"
-                    ? "bg-emerald-100 text-emerald-700"
+                    ? "bg-teal-100 text-teal-700"
                     : txn.linkedItemType === "savings"
                     ? "bg-blue-100 text-blue-700"
                     : "bg-rose-100 text-rose-700"
@@ -46,7 +50,11 @@ export default function TransactionList({ transactions, currency, onDelete }: Pr
                   {txn.linkedItemType}
                 </span>
               </td>
-              <td className="px-4 py-2.5 text-right text-[13px] font-semibold text-slate-700">{formatCurrency(txn.amount, currency)}</td>
+              <td className={`px-4 py-2.5 text-right text-[13px] font-semibold ${
+                txn.linkedItemType === "income" ? "text-teal-700" : "text-slate-700"
+              }`}>
+                {txn.linkedItemType === "income" ? "+" : ""}{formatCurrency(txn.amount, currency)}
+              </td>
               <td className="px-2 py-2.5">
                 <button onClick={() => onDelete(txn.id)} className="text-gray-300 hover:text-rose-500 transition-colors">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

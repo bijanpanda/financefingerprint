@@ -38,21 +38,22 @@ function HomeContent() {
       <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center">
               <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
               </svg>
             </div>
-            <span className="text-xl font-bold text-slate-800">Finance<span className="text-emerald-600">Fingerprint</span><span className="text-slate-400 text-sm">.ai</span></span>
+            <span className="text-xl font-bold text-slate-900">Vestro<span className="text-slate-500">fin</span></span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#features" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">Features</a>
-            <a href="#tools" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">Tools</a>
-            <Link href="/insights" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">FinPrint Insights</Link>
-            <a href="#about" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">About</a>
+            <a href="#features" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Features</a>
+            <a href="#tools" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Tools</a>
+            <Link href="/profile/setup" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Financial DNA</Link>
+            <Link href="/insights" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">FinPrint Insights</Link>
+            <a href="#about" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">About</a>
             {user ? (
               <div className="flex items-center gap-4">
-                <Link href="/dashboard" className="text-sm text-slate-600 hover:text-emerald-600 font-medium transition-colors">
+                <Link href="/dashboard" className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors">
                   Budget Dashboard
                 </Link>
                 <div className="relative" ref={menuRef}>
@@ -60,7 +61,7 @@ function HomeContent() {
                     onClick={() => setMenuOpen(!menuOpen)}
                     className="flex items-center gap-2 hover:opacity-80 transition-opacity"
                   >
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white text-sm font-bold shadow-sm">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center text-white text-sm font-bold shadow-sm">
                       {initials}
                     </div>
                     <span className="text-sm font-medium text-slate-700">{displayName}</span>
@@ -74,11 +75,17 @@ function HomeContent() {
                         <p className="text-sm font-medium text-slate-800">{displayName}</p>
                         <p className="text-xs text-slate-400 truncate">{user.email}</p>
                       </div>
-                      <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-emerald-50 hover:text-emerald-700 transition-colors" onClick={() => setMenuOpen(false)}>
+                      <Link href="/dashboard" className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" onClick={() => setMenuOpen(false)}>
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                         </svg>
                         Budget Dashboard
+                      </Link>
+                      <Link href="/profile/setup" className="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" onClick={() => setMenuOpen(false)}>
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3" />
+                        </svg>
+                        Financial DNA
                       </Link>
                       <button
                         onClick={() => { signOut().then(() => { setMenuOpen(false); setLogoutMessage(true); setTimeout(() => setLogoutMessage(false), 5000); }); }}
@@ -95,10 +102,10 @@ function HomeContent() {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link href="/login" className="text-sm text-slate-600 hover:text-emerald-600 font-medium transition-colors">
+                <Link href="/login" className="text-sm text-slate-600 hover:text-slate-900 font-medium transition-colors">
                   Sign In
                 </Link>
-                <Link href="/signup" className="px-5 py-2 gradient-btn text-white rounded-xl text-sm font-medium shadow-sm">
+                <Link href="/signup" className="px-5 py-2.5 gradient-btn text-white rounded-full text-sm font-medium shadow-sm">
                   Get Started Free
                 </Link>
               </div>
@@ -109,12 +116,12 @@ function HomeContent() {
 
       {/* Logout success message */}
       {logoutMessage && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-emerald-50 border border-emerald-300 text-emerald-800 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 text-sm font-medium animate-fade-in">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-teal-50 border border-teal-300 text-teal-800 px-6 py-3 rounded-2xl shadow-lg flex items-center gap-2 text-sm font-medium animate-fade-in">
           <svg className="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
           You have been successfully logged out.
-          <button onClick={() => setLogoutMessage(false)} className="ml-2 text-emerald-600 hover:text-emerald-800">
+          <button onClick={() => setLogoutMessage(false)} className="ml-2 text-teal-600 hover:text-teal-800">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -123,33 +130,31 @@ function HomeContent() {
       )}
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6 bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30">
+      <section className="pt-32 pb-20 px-6 hero-gradient-bg">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-medium mb-6">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/70 text-slate-700 text-xs font-bold uppercase tracking-widest mb-6">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-400 animate-pulse" />
               Now in Beta — Free to use
             </div>
-            <h1 className="text-5xl font-extrabold text-slate-900 leading-tight mb-6">
+            <h1 className="text-5xl md:text-6xl font-black text-slate-900 leading-tight mb-6">
               Your finances,<br />
-              <span className="bg-gradient-to-r from-emerald-600 via-teal-500 to-cyan-500 bg-clip-text text-transparent">
-                perfectly planned.
-              </span>
+              perfectly planned.
             </h1>
             <p className="text-lg text-slate-600 leading-relaxed mb-8 max-w-2xl">
-              FinanceFingerprint.ai gives you intelligent tools to budget smarter, track every expense,
-              and build wealth — all in one beautiful dashboard. Your financial fingerprint, perfected.
+              Vestrofin gives you intelligent tools to budget smarter, track every expense,
+              and build wealth — all in one beautiful dashboard. Your finances, perfected.
             </p>
             <div className="flex items-center gap-4">
               <Link
                 href={user ? "/dashboard" : "/signup"}
-                className="px-8 py-3 gradient-btn text-white rounded-xl text-base font-semibold shadow-lg hover:shadow-xl transition-shadow"
+                className="px-8 py-3 gradient-btn text-white rounded-full text-base font-semibold shadow-lg hover:shadow-xl transition-shadow"
               >
                 {user ? "Open Dashboard" : "Start Free Today"}
               </Link>
               <a
                 href="#tools"
-                className="px-8 py-3 border-2 border-emerald-200 text-emerald-700 rounded-xl text-base font-semibold hover:bg-emerald-50 transition-colors"
+                className="px-8 py-3 border-2 border-slate-200 bg-white/70 text-slate-800 rounded-full text-base font-semibold hover:bg-white transition-colors"
               >
                 Explore Tools
               </a>
@@ -187,14 +192,14 @@ function HomeContent() {
       <section id="features" className="py-20 px-6 bg-gradient-to-b from-white to-slate-50">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
-            <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Why FinanceFingerprint?</h2>
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Why Vestrofin?</h2>
             <p className="text-slate-500 max-w-xl mx-auto">Smart features designed to make personal finance effortless</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="glass-card rounded-2xl p-6 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -253,8 +258,8 @@ function HomeContent() {
             </div>
 
             <div className="glass-card rounded-2xl p-6 hover:shadow-lg transition-shadow">
-              <div className="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center mb-4">
-                <svg className="w-6 h-6 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 rounded-xl bg-indigo-100 flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -268,7 +273,7 @@ function HomeContent() {
       </section>
 
       {/* Tools Section */}
-      <section id="tools" className="py-20 px-6 bg-gradient-to-b from-slate-50 to-emerald-50/30">
+      <section id="tools" className="py-20 px-6 bg-gradient-to-b from-slate-50 to-teal-50/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14">
             <h2 className="text-3xl font-extrabold text-slate-900 mb-3">Finance Tools</h2>
@@ -278,9 +283,9 @@ function HomeContent() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Budget App — Active */}
             <Link href={user ? "/dashboard" : "/signup"} className="group">
-              <div className="glass-card rounded-2xl p-6 border-2 border-emerald-200 hover:border-emerald-400 hover:shadow-xl transition-all relative overflow-hidden">
-                <div className="absolute top-3 right-3 px-2 py-0.5 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded-full uppercase">Live</div>
-                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
+              <div className="glass-card rounded-2xl p-6 border-2 border-teal-200 hover:border-teal-400 hover:shadow-xl transition-all relative overflow-hidden">
+                <div className="absolute top-3 right-3 px-2 py-0.5 bg-teal-100 text-teal-700 text-[10px] font-bold rounded-full uppercase">Live</div>
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center mb-4 shadow-lg group-hover:scale-110 transition-transform">
                   <svg className="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                   </svg>
@@ -289,7 +294,7 @@ function HomeContent() {
                 <p className="text-sm text-slate-500 leading-relaxed mb-4">
                   Plan your monthly income, expenses across 7 categories, and savings. Track actuals vs planned with visual analytics.
                 </p>
-                <span className="text-sm font-semibold text-emerald-600 group-hover:text-emerald-700">
+                <span className="text-sm font-semibold text-teal-600 group-hover:text-teal-700">
                   Open Budget Planner →
                 </span>
               </div>
@@ -331,9 +336,9 @@ function HomeContent() {
       {/* About Section */}
       <section id="about" className="py-20 px-6 bg-white">
         <div className="max-w-3xl mx-auto text-center">
-          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">About FinanceFingerprint</h2>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-4">About Vestrofin</h2>
           <p className="text-slate-600 leading-relaxed mb-6">
-            FinanceFingerprint.ai is built on a simple belief: everyone deserves clarity over their money.
+            Vestrofin is built on a simple belief: everyone deserves clarity over their money.
             We&apos;re creating a suite of intelligent, beautiful tools that make personal finance management
             not just easy, but enjoyable. No spreadsheets, no complexity — just clear financial planning.
           </p>
@@ -347,12 +352,12 @@ function HomeContent() {
       <section className="py-16 px-6 gradient-header">
         <div className="max-w-3xl mx-auto text-center">
           <h2 className="text-3xl font-extrabold text-white mb-4">Ready to take control?</h2>
-          <p className="text-emerald-100 mb-8 text-lg">
+          <p className="text-slate-300 mb-8 text-lg">
             Start planning your budget today. It&apos;s free, secure, and takes 30 seconds to sign up.
           </p>
           <Link
             href={user ? "/dashboard" : "/signup"}
-            className="inline-block px-10 py-3.5 bg-white text-emerald-700 rounded-xl text-base font-bold shadow-lg hover:shadow-xl hover:bg-emerald-50 transition-all"
+            className="inline-block px-10 py-3.5 bg-white text-slate-900 rounded-full text-base font-bold shadow-lg hover:shadow-xl hover:bg-slate-50 transition-all"
           >
             {user ? "Go to Dashboard" : "Get Started Free"}
           </Link>
@@ -363,14 +368,14 @@ function HomeContent() {
       <footer className="py-8 px-6 bg-slate-900">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-slate-700 to-slate-950 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
               </svg>
             </div>
-            <span className="text-sm font-semibold text-slate-400">FinanceFingerprint.ai</span>
+            <span className="text-sm font-semibold text-slate-400">Vestrofin</span>
           </div>
-          <p className="text-xs text-slate-500">&copy; {new Date().getFullYear()} FinanceFingerprint. All rights reserved.</p>
+          <p className="text-xs text-slate-500">&copy; {new Date().getFullYear()} Vestrofin. All rights reserved.</p>
         </div>
       </footer>
     </div>
@@ -379,7 +384,7 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-emerald-500 border-t-transparent rounded-full" /></div>}>
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin h-8 w-8 border-4 border-slate-800 border-t-transparent rounded-full" /></div>}>
       <HomeContent />
     </Suspense>
   );

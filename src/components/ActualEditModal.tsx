@@ -5,11 +5,12 @@ import { useState } from "react";
 interface Props {
   itemName: string;
   currentActual: number;
+  itemType?: "income" | "expense" | "savings";
   onSave: (amount: number, date: string, merchantName: string) => void;
   onCancel: () => void;
 }
 
-export default function ActualEditModal({ itemName, currentActual, onSave, onCancel }: Props) {
+export default function ActualEditModal({ itemName, currentActual, itemType = "expense", onSave, onCancel }: Props) {
   const today = new Date().toISOString().split("T")[0];
   const [amount, setAmount] = useState("");
   const [date, setDate] = useState(today);
@@ -40,7 +41,9 @@ export default function ActualEditModal({ itemName, currentActual, onSave, onCan
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="glass-card rounded-2xl p-6 w-full max-w-md shadow-2xl mx-4" style={{ background: "rgba(255,255,255,0.92)" }}>
-        <h3 className="text-base font-bold text-slate-800 mb-1">Log Expense</h3>
+        <h3 className="text-base font-bold text-slate-800 mb-1">
+          Log {itemType === "income" ? "Income" : itemType === "savings" ? "Savings" : "Expense"}
+        </h3>
         <p className="text-xs text-gray-500 mb-4">
           Recording transaction for <span className="font-semibold text-slate-700">{itemName}</span>
           {currentActual > 0 && <> (current actual: {currentActual})</>}
@@ -67,7 +70,7 @@ export default function ActualEditModal({ itemName, currentActual, onSave, onCan
               }}
               placeholder="0.00"
               autoFocus
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
           <div>
@@ -80,20 +83,20 @@ export default function ActualEditModal({ itemName, currentActual, onSave, onCan
               max={today}
               value={date}
               onChange={(e) => setDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
           <div>
             <label className="block text-xs font-medium text-gray-500 mb-1">
-              Merchant Name <span className="text-rose-500">*</span>
+              {itemType === "income" ? "Source" : "Merchant Name"} <span className="text-rose-500">*</span>
             </label>
             <input
               type="text"
               required
               value={merchantName}
               onChange={(e) => setMerchantName(e.target.value)}
-              placeholder="e.g. Amazon, Swiggy"
-              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+              placeholder={itemType === "income" ? "e.g. Employer, Client, Tenant" : "e.g. Amazon, Swiggy"}
+              className="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:ring-2 focus:ring-teal-500 focus:border-transparent"
             />
           </div>
 

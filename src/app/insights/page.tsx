@@ -9,7 +9,7 @@ const COURSES = [
     title: "Budgeting 101",
     description: "Master the fundamentals of planning your money every month.",
     icon: "🎯",
-    color: "from-emerald-500 to-teal-600",
+    color: "from-teal-500 to-cyan-600",
     lessons: [
       {
         num: 1,
@@ -91,21 +91,21 @@ export default function InsightsCourse() {
   const lesson = course.lessons.find((l) => l.num === activeLesson)!;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50/50 to-cyan-50/30">
+    <div className="min-h-screen bg-[var(--surface-1)]">
       {/* Nav */}
       <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50">
         <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center">
               <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
               </svg>
             </div>
-            <span className="text-lg font-bold text-slate-800">Finance<span className="text-emerald-600">Fingerprint</span></span>
+            <span className="text-lg font-bold text-slate-900">Vestro<span className="text-slate-500">fin</span></span>
           </Link>
           <div className="flex items-center gap-4">
-            <Link href="/" className="text-sm text-slate-600 hover:text-emerald-600 transition-colors">Home</Link>
-            <span className="text-sm font-medium text-emerald-600">FinPrint Insights</span>
+            <Link href="/" className="text-sm text-slate-600 hover:text-slate-900 transition-colors">Home</Link>
+            <span className="text-sm font-medium text-slate-900">FinPrint Insights</span>
           </div>
         </div>
       </nav>
@@ -113,7 +113,7 @@ export default function InsightsCourse() {
       {/* Header */}
       <div className="max-w-6xl mx-auto px-6 pt-12 pb-8">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3" />
             </svg>
@@ -132,7 +132,7 @@ export default function InsightsCourse() {
               onClick={() => { setActiveCourse(c.id); setActiveLesson(1); }}
               className={`glass-card rounded-2xl p-5 text-left transition-all ${
                 activeCourse === c.id
-                  ? "ring-2 ring-emerald-500 shadow-lg"
+                  ? "ring-2 ring-teal-500 shadow-lg"
                   : "hover:shadow-md"
               }`}
             >
@@ -147,7 +147,7 @@ export default function InsightsCourse() {
                     key={l.num}
                     className={`h-1.5 flex-1 rounded-full ${
                       activeCourse === c.id && l.num <= activeLesson
-                        ? "bg-emerald-500"
+                        ? "bg-teal-500"
                         : "bg-gray-200"
                     }`}
                   />
@@ -171,7 +171,7 @@ export default function InsightsCourse() {
                   onClick={() => setActiveLesson(l.num)}
                   className={`w-full text-left px-4 py-3 rounded-xl text-sm transition-all flex items-center gap-3 ${
                     activeLesson === l.num
-                      ? "bg-emerald-600 text-white shadow-md"
+                      ? "bg-slate-900 text-white shadow-md"
                       : "text-slate-600 hover:bg-white/70"
                   }`}
                 >
@@ -192,7 +192,7 @@ export default function InsightsCourse() {
           <div className="flex-1">
             <div className="glass-card rounded-2xl p-8">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">
+                <span className="text-xs font-semibold text-teal-600 uppercase tracking-wider">
                   Lesson {lesson.num} of {course.lessons.length}
                 </span>
               </div>
@@ -204,7 +204,7 @@ export default function InsightsCourse() {
                 <button
                   onClick={() => setActiveLesson(Math.max(1, activeLesson - 1))}
                   disabled={activeLesson === 1}
-                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-emerald-600 disabled:opacity-30 disabled:hover:text-slate-600"
+                  className="px-4 py-2 text-sm font-medium text-slate-600 hover:text-slate-900 disabled:opacity-30 disabled:hover:text-slate-600"
                 >
                   ← Previous
                 </button>

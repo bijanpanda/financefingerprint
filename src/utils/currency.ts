@@ -5,9 +5,9 @@ const currencyConfig: Record<Currency, { symbol: string; locale: string }> = {
   USD: { symbol: "$", locale: "en-US" },
   EUR: { symbol: "€", locale: "de-DE" },
   GBP: { symbol: "£", locale: "en-GB" },
-  AUD: { symbol: "A$", locale: "en-AU" },
-  CAD: { symbol: "C$", locale: "en-CA" },
-  SGD: { symbol: "S$", locale: "en-SG" },
+  AUD: { symbol: "A$", locale: "en-US" },
+  CAD: { symbol: "C$", locale: "en-US" },
+  SGD: { symbol: "S$", locale: "en-US" },
   AED: { symbol: "AED", locale: "ar-AE" },
 };
 
@@ -30,4 +30,8 @@ export function formatCurrency(amount: number, currency: Currency): string {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);
+}
+
+export function getCurrencySymbol(currency: Currency): string {
+  return currencyConfig[currency].symbol;
 }
