@@ -20,6 +20,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Environments
+
+This project has two environments, kept apart by which git branch you're on
+— no manual switching of secrets required:
+
+- **`main`** → Vercel **Production**. Uses the real Firebase projects
+  (`financialfingerprint-in` / `-us`) and sends real emails. Only merge
+  tested, working code here.
+- **`test`** (and any other branch or pull request) → Vercel **Preview**.
+  Uses a single separate test Firebase project, configured only in Vercel's
+  dashboard under the Preview environment. Safe to experiment on — nothing
+  here touches real user data.
+
+Workflow: do your work on `test` (or a feature branch merged into `test`),
+push it, and Vercel builds a Preview URL automatically. Once it looks good
+there, open a pull request from `test` into `main` and merge — Vercel
+redeploys Production automatically, already pointed at the production config.
+
+See `.env.local.example` for which variables belong to which environment.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
