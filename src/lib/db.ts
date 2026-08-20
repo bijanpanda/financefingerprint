@@ -12,7 +12,7 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db } from "./firebase";
-import { LineItem, ExpenseItem, Transaction, ExpenseSubHead } from "@/types";
+import { LineItem, ExpenseItem, Transaction, ExpenseSubHead, BudgetMonth } from "@/types";
 
 function budgetPath(uid: string, monthId: string) {
   return `users/${uid}/budgets/${monthId}`;
@@ -101,6 +101,14 @@ export async function deleteTransaction(uid: string, monthId: string, id: string
 export async function ensureBudgetMonth(uid: string, monthId: string, month: number, year: number) {
   const ref = doc(db, budgetPath(uid, monthId));
   await setDoc(ref, { month, year, createdAt: Timestamp.now() }, { merge: true });
+}
+
+// --- Budget Months (list, most recent first) ---
+export async function getBudgetMonths(uid: string): Promise<BudgetMonth[]> {
+  const snap = await getDocs(collection(db, "users", uid, "budgets"));
+  return snap.docs
+    .map((d) => ({ id: d.id, ...d.data() } as BudgetMonth))
+    .sort((a, b) => (a.id < b.id ? 1 : -1));
 }
 
 // --- Initialize defaults ---
