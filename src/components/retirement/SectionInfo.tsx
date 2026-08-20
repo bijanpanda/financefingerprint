@@ -1,20 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 interface Props {
   description: string;
 }
 
+const TOOLTIP_WIDTH = 224;
+const VIEWPORT_MARGIN = 8;
+
 // A small (i) button next to a section header that toggles a one-line
 // explanation of what the section is for — click, not hover, so it works
-// on touch too.
+// on touch too. Rendered through a portal into document.body: the section
+// cards use overflow-hidden to clip their rounded corners, which was
+// silently clipping the tooltip whenever it extended past the card edge.
 export default function SectionInfo({ description }: Props) {
   const [open, setOpen] = useState(false);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+
+    function place() {
+      const rect = buttonRef.current?.getBoundingClientRect();
+      if (!rect) return;
+      const left = Math.min(
+        Math.max(VIEWPORT_MARGIN, rect.left),
+        window.innerWidth - TOOLTIP_WIDTH - VIEWPORT_MARGIN
+      );
+      setCoords({ top: rect.bottom + 6, left });
+    }
+    place();
+
+    function handleOutside(e: MouseEvent) {
+      if (buttonRef.current && !buttonRef.current.contains(e.target as Node)) setOpen(false);
+    }
+    window.addEventListener("scroll", place, true);
+    window.addEventListener("resize", place);
+    window.addEventListener("mousedown", handleOutside);
+    return () => {
+      window.removeEventListener("scroll", place, true);
+      window.removeEventListener("resize", place);
+      window.removeEventListener("mousedown", handleOutside);
+    };
+  }, [open]);
 
   return (
-    <span className="relative inline-flex">
+    <>
       <button
+        ref={buttonRef}
         type="button"
         onClick={(e) => {
           e.stopPropagation();
@@ -26,25 +62,26 @@ export default function SectionInfo({ description }: Props) {
       >
         i
       </button>
-      {open && (
-        <span
-          role="tooltip"
-          onClick={(e) => e.stopPropagation()}
-          className="absolute right-0 top-6 z-10 w-52 max-w-[70vw] rounded-lg bg-slate-800 text-xs font-normal normal-case tracking-normal leading-snug p-2.5 shadow-lg"
-          style={{
-            // Escape any inherited gradient-text styling (e.g. .profile-label
-            // uses background-clip:text + transparent fill on parent headers) —
-            // without this the tooltip box renders with invisible text.
-            color: "white",
-            WebkitTextFillColor: "white",
-            background: "#1e293b",
-            backgroundClip: "border-box",
-            WebkitBackgroundClip: "border-box",
-          }}
-        >
-          {description}
-        </span>
-      )}
-    </span>
+      {open &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div
+            role="tooltip"
+            style={{
+              position: "fixed",
+              top: coords.top,
+              left: coords.left,
+              width: TOOLTIP_WIDTH,
+              color: "white",
+              WebkitTextFillColor: "white",
+              background: "#1e293b",
+            }}
+            className="z-50 rounded-lg text-xs font-normal normal-case tracking-normal leading-snug p-2.5 shadow-lg"
+          >
+            {description}
+          </div>,
+          document.body
+        )}
+    </>
   );
 }
