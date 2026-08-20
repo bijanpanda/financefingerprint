@@ -30,7 +30,17 @@ export default function SectionInfo({ description }: Props) {
         <span
           role="tooltip"
           onClick={(e) => e.stopPropagation()}
-          className="absolute left-0 top-6 z-10 w-56 rounded-lg bg-slate-800 text-white text-xs font-normal normal-case tracking-normal leading-snug p-2.5 shadow-lg"
+          className="absolute right-0 top-6 z-10 w-52 max-w-[70vw] rounded-lg bg-slate-800 text-xs font-normal normal-case tracking-normal leading-snug p-2.5 shadow-lg"
+          style={{
+            // Escape any inherited gradient-text styling (e.g. .profile-label
+            // uses background-clip:text + transparent fill on parent headers) —
+            // without this the tooltip box renders with invisible text.
+            color: "white",
+            WebkitTextFillColor: "white",
+            background: "#1e293b",
+            backgroundClip: "border-box",
+            WebkitBackgroundClip: "border-box",
+          }}
         >
           {description}
         </span>
