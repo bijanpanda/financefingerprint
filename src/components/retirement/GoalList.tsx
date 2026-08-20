@@ -5,6 +5,7 @@ import { CATEGORY_INFLATION, Goal, GoalCategory } from "@/types/retirement";
 import { formatCurrency } from "@/utils/currency";
 import { Currency } from "@/types";
 import MiniField from "./MiniField";
+import SectionInfo from "./SectionInfo";
 
 interface Props {
   goals: Goal[];
@@ -76,7 +77,10 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       <button onClick={() => setCollapsed(!collapsed)} className="w-full flex items-center justify-between px-4 py-3.5">
-        <span className="profile-label mb-0">Goals · {goals.length}</span>
+        <span className="profile-label mb-0 flex items-center gap-1.5">
+          Goals · {goals.length}
+          <SectionInfo description="One-time or recurring big expenses — a child's education, a wedding, a home down payment, a loan payoff — that aren't part of your everyday living costs." />
+        </span>
         <svg
           className={`w-4 h-4 text-slate-400 transition-transform ${collapsed ? "" : "rotate-180"}`}
           fill="none"

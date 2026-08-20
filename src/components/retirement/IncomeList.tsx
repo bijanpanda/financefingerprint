@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { IncomeKind, IncomeStream } from "@/types/retirement";
 import MiniField from "./MiniField";
+import SectionInfo from "./SectionInfo";
 
 interface Props {
   streams: IncomeStream[];
@@ -43,7 +44,10 @@ export default function IncomeList({ streams, onChange }: Props) {
   return (
     <div className="glass-card rounded-2xl overflow-hidden">
       <button onClick={() => setCollapsed(!collapsed)} className="w-full flex items-center justify-between px-4 py-3.5">
-        <span className="profile-label mb-0">Income · {streams.length}</span>
+        <span className="profile-label mb-0 flex items-center gap-1.5">
+          Income · {streams.length}
+          <SectionInfo description="Money that keeps coming in after you retire — rent, dividends, a pension, an annuity, or part-time work. This reduces how much your savings need to cover on their own." />
+        </span>
         <svg
           className={`w-4 h-4 text-slate-400 transition-transform ${collapsed ? "" : "rotate-180"}`}
           fill="none"

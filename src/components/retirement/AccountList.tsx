@@ -7,6 +7,7 @@ import { ASSET_TYPES, blendedReturn, toBase, totalInBase } from "@/utils/retirem
 import { formatCurrency } from "@/utils/currency";
 import { CURRENCIES } from "@/utils/currency";
 import MiniField from "./MiniField";
+import SectionInfo from "./SectionInfo";
 
 interface Props {
   accounts: AssetAccount[];
@@ -53,8 +54,9 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
         onClick={() => setCollapsed(!collapsed)}
         className="w-full flex items-center justify-between px-4 py-3.5"
       >
-        <span className="profile-label mb-0">
+        <span className="profile-label mb-0 flex items-center gap-1.5">
           Accounts · {formatCurrency(total, baseCurrency)}
+          <SectionInfo description="These are your current investments — money you've already set aside, growing until you need to draw on it in retirement." />
         </span>
         <svg
           className={`w-4 h-4 text-slate-400 transition-transform ${collapsed ? "" : "rotate-180"}`}
