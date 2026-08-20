@@ -123,7 +123,7 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
                   </select>
                 </MiniField>
 
-                <div className="grid grid-cols-3 gap-2">
+                <div className="space-y-2">
                   <MiniField label="Amount / yr, today's money">
                     <input
                       type="number"

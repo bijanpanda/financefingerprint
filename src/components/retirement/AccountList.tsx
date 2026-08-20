@@ -89,7 +89,7 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 <MiniField label="Account type">
                   <select
                     className="profile-input"
@@ -118,7 +118,7 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
                 </MiniField>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 <MiniField label="Balance, as held">
                   <input
                     type="number"
@@ -139,7 +139,7 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
                 </MiniField>
               </div>
 
-              <div className="grid grid-cols-2 gap-2">
+              <div className="space-y-2">
                 <MiniField label="Expected return %/yr">
                   <input
                     type="number"

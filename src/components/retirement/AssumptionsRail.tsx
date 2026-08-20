@@ -85,21 +85,22 @@ export default function AssumptionsRail({ plan, userId, blendedAccountReturn, on
           />
         </Field>
 
-        <Field label="Retire at / live to">
-          <div className="flex gap-2">
-            <input
-              type="number"
-              className="profile-input"
-              value={plan.retirementAge}
-              onChange={(e) => onChange({ retirementAge: Number(e.target.value) })}
-            />
-            <input
-              type="number"
-              className="profile-input"
-              value={plan.lifeExpectancy}
-              onChange={(e) => onChange({ lifeExpectancy: Number(e.target.value) })}
-            />
-          </div>
+        <Field label="Retirement age">
+          <input
+            type="number"
+            className="profile-input"
+            value={plan.retirementAge}
+            onChange={(e) => onChange({ retirementAge: Number(e.target.value) })}
+          />
+        </Field>
+
+        <Field label="Life expectancy">
+          <input
+            type="number"
+            className="profile-input"
+            value={plan.lifeExpectancy}
+            onChange={(e) => onChange({ lifeExpectancy: Number(e.target.value) })}
+          />
         </Field>
 
         <Field label="Inflation %">
