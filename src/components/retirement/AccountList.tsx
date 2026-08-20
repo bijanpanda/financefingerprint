@@ -6,6 +6,7 @@ import { AssetAccount, AssetType } from "@/types/retirement";
 import { ASSET_TYPES, blendedReturn, toBase, totalInBase } from "@/utils/retirementFx";
 import { formatCurrency } from "@/utils/currency";
 import { CURRENCIES } from "@/utils/currency";
+import MiniField from "./MiniField";
 
 interface Props {
   accounts: AssetAccount[];
@@ -73,83 +74,93 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
 
           {accounts.map((account) => (
             <div key={account.id} className="border border-slate-200 rounded-xl p-3 space-y-2">
-              <div className="flex items-center gap-2">
-                <input
-                  type="text"
-                  placeholder="Label"
-                  className="profile-input flex-1"
-                  value={account.label}
-                  onChange={(e) => update(account.id, { label: e.target.value })}
-                />
-                <button onClick={() => remove(account.id)} className="text-slate-400 hover:text-red-500 shrink-0 px-1" aria-label="Remove account">
+              <div className="flex items-end gap-2">
+                <MiniField label="Label — your name for this holding">
+                  <input
+                    type="text"
+                    placeholder="e.g. Employer 401(k)"
+                    className="profile-input flex-1"
+                    value={account.label}
+                    onChange={(e) => update(account.id, { label: e.target.value })}
+                  />
+                </MiniField>
+                <button onClick={() => remove(account.id)} className="text-slate-400 hover:text-red-500 shrink-0 px-1 pb-2.5" aria-label="Remove account">
                   ×
                 </button>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <select
-                  className="profile-input"
-                  value={account.assetType}
-                  onChange={(e) => update(account.id, { assetType: e.target.value as AssetType })}
-                >
-                  {Object.entries(ASSET_TYPES).map(([key, info]) => (
-                    <option key={key} value={key}>
-                      {info.label}
-                    </option>
-                  ))}
-                </select>
-                <select
-                  className="profile-input"
-                  value={account.currency}
-                  onChange={(e) => update(account.id, { currency: e.target.value as Currency })}
-                >
-                  {CURRENCIES.map((c) => (
-                    <option key={c.value} value={c.value}>
-                      {c.value}
-                    </option>
-                  ))}
-                </select>
+                <MiniField label="Account type">
+                  <select
+                    className="profile-input"
+                    value={account.assetType}
+                    onChange={(e) => update(account.id, { assetType: e.target.value as AssetType })}
+                  >
+                    {Object.entries(ASSET_TYPES).map(([key, info]) => (
+                      <option key={key} value={key}>
+                        {info.label}
+                      </option>
+                    ))}
+                  </select>
+                </MiniField>
+                <MiniField label="Held in currency">
+                  <select
+                    className="profile-input"
+                    value={account.currency}
+                    onChange={(e) => update(account.id, { currency: e.target.value as Currency })}
+                  >
+                    {CURRENCIES.map((c) => (
+                      <option key={c.value} value={c.value}>
+                        {c.value}
+                      </option>
+                    ))}
+                  </select>
+                </MiniField>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="number"
-                  placeholder="Amount"
-                  className="profile-input"
-                  value={account.balance}
-                  onChange={(e) => update(account.id, { balance: Number(e.target.value) })}
-                />
-                <input
-                  type="number"
-                  placeholder="FX rate"
-                  step="0.01"
-                  disabled={account.currency === baseCurrency}
-                  className="profile-input disabled:opacity-50"
-                  value={account.fxRate}
-                  onChange={(e) => update(account.id, { fxRate: Number(e.target.value), fxSource: "manual" })}
-                />
+                <MiniField label="Balance, as held">
+                  <input
+                    type="number"
+                    className="profile-input"
+                    value={account.balance}
+                    onChange={(e) => update(account.id, { balance: Number(e.target.value) })}
+                  />
+                </MiniField>
+                <MiniField label={account.currency === baseCurrency ? "FX rate (same as base)" : `FX rate — ${account.currency} → ${baseCurrency}`}>
+                  <input
+                    type="number"
+                    step="0.01"
+                    disabled={account.currency === baseCurrency}
+                    className="profile-input disabled:opacity-50"
+                    value={account.fxRate}
+                    onChange={(e) => update(account.id, { fxRate: Number(e.target.value), fxSource: "manual" })}
+                  />
+                </MiniField>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
-                <input
-                  type="number"
-                  placeholder="Expected return %"
-                  step="0.1"
-                  className="profile-input"
-                  value={(account.expectedReturn * 100).toFixed(2)}
-                  onChange={(e) => update(account.id, { expectedReturn: Number(e.target.value) / 100 })}
-                />
-                <input
-                  type="number"
-                  placeholder="Available from age"
-                  className="profile-input"
-                  value={account.availableFromAge ?? ""}
-                  onChange={(e) =>
-                    update(account.id, {
-                      availableFromAge: e.target.value === "" ? null : Number(e.target.value),
-                    })
-                  }
-                />
+                <MiniField label="Expected return %/yr">
+                  <input
+                    type="number"
+                    step="0.1"
+                    className="profile-input"
+                    value={(account.expectedReturn * 100).toFixed(2)}
+                    onChange={(e) => update(account.id, { expectedReturn: Number(e.target.value) / 100 })}
+                  />
+                </MiniField>
+                <MiniField label="Available from age (blank = anytime)">
+                  <input
+                    type="number"
+                    className="profile-input"
+                    value={account.availableFromAge ?? ""}
+                    onChange={(e) =>
+                      update(account.id, {
+                        availableFromAge: e.target.value === "" ? null : Number(e.target.value),
+                      })
+                    }
+                  />
+                </MiniField>
               </div>
 
               <p className="text-xs text-[var(--text-muted)]">

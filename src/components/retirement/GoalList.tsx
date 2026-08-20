@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CATEGORY_INFLATION, Goal, GoalCategory } from "@/types/retirement";
 import { formatCurrency } from "@/utils/currency";
 import { Currency } from "@/types";
+import MiniField from "./MiniField";
 
 interface Props {
   goals: Goal[];
@@ -93,72 +94,81 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
             const isCountryRate = goal.inflationRate == null && goal.category === "custom";
             return (
               <div key={goal.id} className="border border-slate-200 rounded-xl p-3 space-y-2">
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    placeholder="Label"
-                    className="profile-input flex-1"
-                    value={goal.label}
-                    onChange={(e) => update(goal.id, { label: e.target.value })}
-                  />
-                  <button onClick={() => remove(goal.id)} className="text-slate-400 hover:text-red-500 shrink-0 px-1" aria-label="Remove goal">
+                <div className="flex items-end gap-2">
+                  <MiniField label="Label — your name for this goal">
+                    <input
+                      type="text"
+                      placeholder="e.g. Priya's college fund"
+                      className="profile-input flex-1"
+                      value={goal.label}
+                      onChange={(e) => update(goal.id, { label: e.target.value })}
+                    />
+                  </MiniField>
+                  <button onClick={() => remove(goal.id)} className="text-slate-400 hover:text-red-500 shrink-0 px-1 pb-2.5" aria-label="Remove goal">
                     ×
                   </button>
                 </div>
 
-                <select
-                  className="profile-input"
-                  value={goal.category}
-                  onChange={(e) => update(goal.id, { category: e.target.value as GoalCategory })}
-                >
-                  {(Object.keys(CATEGORY_LABELS) as GoalCategory[]).map((c) => (
-                    <option key={c} value={c}>
-                      {CATEGORY_LABELS[c]}
-                    </option>
-                  ))}
-                </select>
+                <MiniField label="Category — sets the default inflation rate">
+                  <select
+                    className="profile-input"
+                    value={goal.category}
+                    onChange={(e) => update(goal.id, { category: e.target.value as GoalCategory })}
+                  >
+                    {(Object.keys(CATEGORY_LABELS) as GoalCategory[]).map((c) => (
+                      <option key={c} value={c}>
+                        {CATEGORY_LABELS[c]}
+                      </option>
+                    ))}
+                  </select>
+                </MiniField>
 
                 <div className="grid grid-cols-3 gap-2">
-                  <input
-                    type="number"
-                    placeholder="Amount / yr"
-                    className="profile-input"
-                    value={goal.amountPerYear}
-                    onChange={(e) => update(goal.id, { amountPerYear: Number(e.target.value) })}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Start age"
-                    className="profile-input"
-                    value={goal.startAge}
-                    onChange={(e) => update(goal.id, { startAge: Number(e.target.value) })}
-                  />
-                  <input
-                    type="number"
-                    placeholder="Duration yrs"
-                    className="profile-input"
-                    value={goal.durationYears}
-                    onChange={(e) => update(goal.id, { durationYears: Number(e.target.value) })}
-                  />
+                  <MiniField label="Amount / yr, today's money">
+                    <input
+                      type="number"
+                      className="profile-input"
+                      value={goal.amountPerYear}
+                      onChange={(e) => update(goal.id, { amountPerYear: Number(e.target.value) })}
+                    />
+                  </MiniField>
+                  <MiniField label="Start age">
+                    <input
+                      type="number"
+                      className="profile-input"
+                      value={goal.startAge}
+                      onChange={(e) => update(goal.id, { startAge: Number(e.target.value) })}
+                    />
+                  </MiniField>
+                  <MiniField label="Duration, years">
+                    <input
+                      type="number"
+                      className="profile-input"
+                      value={goal.durationYears}
+                      onChange={(e) => update(goal.id, { durationYears: Number(e.target.value) })}
+                    />
+                  </MiniField>
                 </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    step="0.1"
-                    placeholder="Rate % (blank = category)"
-                    className="profile-input flex-1"
-                    value={goal.inflationRate != null ? (goal.inflationRate * 100).toFixed(1) : ""}
-                    onChange={(e) =>
-                      update(goal.id, {
-                        inflationRate: e.target.value === "" ? null : Number(e.target.value) / 100,
-                      })
-                    }
-                  />
-                  <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">
-                    {(rate * 100).toFixed(1)}% {isCountryRate ? "· country rate" : "· category rate"}
-                  </span>
-                </div>
+                <MiniField label="Rate override % — blank uses the category rate shown alongside">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="number"
+                      step="0.1"
+                      placeholder="blank = default"
+                      className="profile-input flex-1"
+                      value={goal.inflationRate != null ? (goal.inflationRate * 100).toFixed(1) : ""}
+                      onChange={(e) =>
+                        update(goal.id, {
+                          inflationRate: e.target.value === "" ? null : Number(e.target.value) / 100,
+                        })
+                      }
+                    />
+                    <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">
+                      {(rate * 100).toFixed(1)}% {isCountryRate ? "· country rate" : "· category rate"}
+                    </span>
+                  </div>
+                </MiniField>
 
                 <p className="text-xs text-[var(--text-muted)]">
                   At age {goal.startAge}: {formatCurrency(futureValue(goal, currentAge, countryInflationRate), baseCurrency)}
