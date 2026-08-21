@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, query, orderBy } from "firebase/firestore";
 import { db } from "./firebase";
 import { Currency } from "@/types";
 import { AssetAccount, Goal, RetirementPlan } from "@/types/retirement";
@@ -8,6 +8,11 @@ export interface RetirementPlanDoc extends RetirementPlan {
   accounts: AssetAccount[];
   livingExpenseSource: BudgetDerivationSource;
   livingExpenseDerivedAt: string | null;
+}
+
+export interface PlanVersion extends RetirementPlanDoc {
+  versionId: string;
+  savedAt: string;
 }
 
 function planRef(uid: string) {
@@ -48,6 +53,26 @@ export async function getRetirementPlan(uid: string): Promise<RetirementPlanDoc 
 export async function saveRetirementPlan(uid: string, plan: RetirementPlanDoc): Promise<void> {
   const { goals: _goals, ...rest } = plan;
   await setDoc(planRef(uid), rest, { merge: true });
+}
+
+function versionsPath(uid: string) {
+  return `users/${uid}/retirement/plan/versions`;
+}
+
+// Explicit "Save" creates a baseline: a full, immutable snapshot of the
+// current plan (goals included, denormalized — a version is a point-in-time
+// record, not a live reference into the goals subcollection). Past versions
+// are never overwritten or deleted here; each save just adds a new one.
+export async function saveVersion(uid: string, plan: RetirementPlanDoc): Promise<string> {
+  const savedAt = new Date().toISOString();
+  const ref = await addDoc(collection(db, versionsPath(uid)), { ...plan, savedAt });
+  return ref.id;
+}
+
+// Newest first.
+export async function getVersions(uid: string): Promise<PlanVersion[]> {
+  const snap = await getDocs(query(collection(db, versionsPath(uid)), orderBy("savedAt", "desc")));
+  return snap.docs.map((d) => ({ ...(d.data() as Omit<PlanVersion, "versionId">), versionId: d.id }));
 }
 
 // UserProfile has no country field (checked — identity/financial profiles

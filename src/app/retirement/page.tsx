@@ -7,7 +7,10 @@ import {
   defaultCountryForCurrency,
   getRetirementPlan,
   saveRetirementPlan,
+  saveVersion,
+  getVersions,
   RetirementPlanDoc,
+  PlanVersion,
 } from "@/lib/retirementDb";
 import { deriveAnnualExpense, deriveAnnualSavings } from "@/utils/retirementFromBudget";
 import { totalInBase, blendedReturn } from "@/utils/retirementFx";
@@ -20,6 +23,7 @@ import GoalList from "@/components/retirement/GoalList";
 import VerdictBanner from "@/components/retirement/VerdictBanner";
 import RunwayChart from "@/components/retirement/RunwayChart";
 import LedgerTable from "@/components/retirement/LedgerTable";
+import VersionHistory from "@/components/retirement/VersionHistory";
 
 const SAVE_DEBOUNCE_MS = 800;
 
@@ -50,6 +54,8 @@ export default function RetirementPage() {
   const router = useRouter();
   const [plan, setPlan] = useState<RetirementPlanDoc | null>(null);
   const [loading, setLoading] = useState(true);
+  const [versions, setVersions] = useState<PlanVersion[]>([]);
+  const [savingVersion, setSavingVersion] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
@@ -60,7 +66,9 @@ export default function RetirementPage() {
     if (!user) return;
 
     (async () => {
-      const existing = await getRetirementPlan(user.uid);
+      const [existing, existingVersions] = await Promise.all([getRetirementPlan(user.uid), getVersions(user.uid)]);
+      setVersions(existingVersions);
+
       if (existing) {
         setPlan(existing);
         setLoading(false);
@@ -134,6 +142,23 @@ export default function RetirementPage() {
     () => (plan && plan.accounts.length > 0 ? blendedReturn(plan.accounts, plan.baseCurrency) : null),
     [plan]
   );
+
+  async function handleSaveVersion() {
+    if (!user || !plan) return;
+    setSavingVersion(true);
+    // Flush any pending debounced draft save first so the version snapshot
+    // and the "current" doc never disagree.
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    await saveRetirementPlan(user.uid, plan);
+    await saveVersion(user.uid, plan);
+    const fresh = await getVersions(user.uid);
+    setVersions(fresh);
+    setSavingVersion(false);
+  }
+
+  function handleRestore(restored: RetirementPlanDoc) {
+    updatePlan(() => restored);
+  }
 
   function applySolve(lever: SolveLever, value: number) {
     if (lever === "savings") updatePlan({ annualSavings: value });
@@ -213,6 +238,12 @@ export default function RetirementPage() {
             </main>
 
             <aside className="w-full lg:w-[320px] shrink-0 order-2 lg:order-1 px-4 lg:px-4 py-5 space-y-4 border-b lg:border-b-0 lg:border-r border-[var(--border-default)]">
+              <VersionHistory
+                versions={versions}
+                saving={savingVersion}
+                onSave={handleSaveVersion}
+                onRestore={handleRestore}
+              />
               <AssumptionsRail
                 plan={plan}
                 userId={user!.uid}
