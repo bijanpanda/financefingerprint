@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORY_INFLATION, Goal, GoalCategory } from "@/types/retirement";
-import { formatCurrency } from "@/utils/currency";
+import { formatCurrency, CURRENCIES } from "@/utils/currency";
 import { Currency } from "@/types";
 import MiniField from "./MiniField";
 import SectionInfo from "./SectionInfo";
@@ -43,16 +43,60 @@ function goalRate(goal: Goal, countryInflationRate: number): number {
   return countryInflationRate;
 }
 
+// Future value in the goal's OWN currency, then converted to base — the
+// same "convert once, outside the compounding" rule as the engine itself.
 function futureValue(goal: Goal, currentAge: number, countryInflationRate: number): number {
   const rate = goalRate(goal, countryInflationRate);
-  return goal.amountPerYear * Math.pow(1 + rate, Math.max(0, goal.startAge - currentAge));
+  const nominal = goal.amountPerYear * Math.pow(1 + rate, Math.max(0, goal.startAge - currentAge));
+  return nominal * (goal.fxRate ?? 1);
 }
 
 export default function GoalList({ goals, currentAge, countryInflationRate, baseCurrency, onChange }: Props) {
   const [collapsed, setCollapsed] = useState(true);
 
+  // §3.3, applied to goals the same way as accounts: fetch a live rate once
+  // per day for any goal in a foreign currency, unless the user has
+  // manually overridden it.
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const stale = goals.filter(
+      (g) => g.currency && g.currency !== baseCurrency && g.fxSource !== "manual" && g.fxAsOf !== today
+    );
+    if (stale.length === 0) return;
+
+    let cancelled = false;
+    fetch(`/api/fx?base=${baseCurrency}`)
+      .then((res) => res.json())
+      .then((data: { source: string; rates: Record<string, number> | null }) => {
+        if (cancelled || data.source !== "live" || !data.rates) return;
+        onChange(
+          goals.map((g) =>
+            g.currency && g.currency !== baseCurrency && g.fxSource !== "manual" && data.rates![g.currency] != null
+              ? { ...g, fxRate: data.rates![g.currency], fxSource: "live", fxAsOf: today }
+              : g
+          )
+        );
+      })
+      .catch(() => {
+        /* offline fallback: keep the last stored rate */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goals, baseCurrency]);
+
   function update(id: string, patch: Partial<Goal>) {
     onChange(goals.map((g) => (g.id === id ? { ...g, ...patch } : g)));
+  }
+
+  function setCurrency(id: string, currency: Currency) {
+    update(id, {
+      currency,
+      fxRate: currency === baseCurrency ? 1 : undefined,
+      fxSource: "live",
+      fxAsOf: undefined,
+    });
   }
 
   function remove(id: string) {
@@ -71,6 +115,10 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
         everyNYears: preset.everyNYears,
         category: preset.category,
         inflationRate: null,
+        currency: baseCurrency,
+        fxRate: 1,
+        fxSource: "live",
+        fxAsOf: new Date().toISOString().slice(0, 10),
       },
     ]);
   }
@@ -129,7 +177,7 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
                 </MiniField>
 
                 <div className="space-y-2">
-                  <MiniField label="Amount / yr, today's money">
+                  <MiniField label="Amount / yr, in the currency below, today's money">
                     <input
                       type="number"
                       className="profile-input"
@@ -137,6 +185,30 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
                       onChange={(e) => update(goal.id, { amountPerYear: Number(e.target.value) })}
                     />
                   </MiniField>
+                  <MiniField label="Currency this expense is in — e.g. studying or travelling abroad">
+                    <select
+                      className="profile-input"
+                      value={goal.currency ?? baseCurrency}
+                      onChange={(e) => setCurrency(goal.id, e.target.value as Currency)}
+                    >
+                      {CURRENCIES.map((c) => (
+                        <option key={c.value} value={c.value}>
+                          {c.value}
+                        </option>
+                      ))}
+                    </select>
+                  </MiniField>
+                  {goal.currency && goal.currency !== baseCurrency && (
+                    <MiniField label={`FX rate — ${goal.currency} → ${baseCurrency}`}>
+                      <input
+                        type="number"
+                        step="0.0001"
+                        className="profile-input"
+                        value={goal.fxRate ?? 1}
+                        onChange={(e) => update(goal.id, { fxRate: Number(e.target.value), fxSource: "manual" })}
+                      />
+                    </MiniField>
+                  )}
                   <MiniField label="Start age">
                     <input
                       type="number"

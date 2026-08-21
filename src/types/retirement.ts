@@ -87,6 +87,15 @@ export interface Goal {
   everyNYears: number | null;
   category: GoalCategory;
   inflationRate: number | null;
+  // Optional — a goal is in base currency by default (amountPerYear as
+  // typed, fxRate implicitly 1). A goal denominated in another currency
+  // (a child studying abroad, an overseas trip) sets these; conversion
+  // into base currency happens once, outside project()'s loop, same as
+  // account balances — never inside the engine itself.
+  currency?: Currency;
+  fxRate?: number;
+  fxSource?: FxSource;
+  fxAsOf?: string;
 }
 
 export interface RetirementPlan {

@@ -108,13 +108,25 @@ export default function RetirementPage() {
   }, []);
 
   // Accounts, when present, drive the corpus and its blended pre-retirement
-  // return — never re-derived inside the projection loop, computed once here.
+  // return — never re-derived inside the projection loop, computed once
+  // here. Same for a goal priced in a currency other than the plan's base
+  // (e.g. tuition abroad): convert to base once, before project() ever
+  // sees it — the engine itself stays currency-agnostic, per §3.
   const effectivePlan = useMemo(() => {
     if (!plan) return null;
-    if (plan.accounts.length === 0) return plan;
+    const goals =
+      plan.goals.some((g) => g.currency && g.currency !== plan.baseCurrency)
+        ? plan.goals.map((g) =>
+            g.currency && g.currency !== plan.baseCurrency
+              ? { ...g, amountPerYear: g.amountPerYear * (g.fxRate ?? 1) }
+              : g
+          )
+        : plan.goals;
+    if (plan.accounts.length === 0 && goals === plan.goals) return plan;
     return {
       ...plan,
-      currentBalance: totalInBase(plan.accounts, plan.baseCurrency),
+      goals,
+      currentBalance: plan.accounts.length > 0 ? totalInBase(plan.accounts, plan.baseCurrency) : plan.currentBalance,
     };
   }, [plan]);
 
