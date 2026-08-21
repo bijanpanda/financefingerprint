@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Currency } from "@/types";
 import { AssetAccount, AssetType } from "@/types/retirement";
 import { ASSET_TYPES, blendedReturn, toBase, totalInBase } from "@/utils/retirementFx";
@@ -8,6 +8,7 @@ import { formatCurrency } from "@/utils/currency";
 import { CURRENCIES } from "@/utils/currency";
 import MiniField from "./MiniField";
 import SectionInfo from "./SectionInfo";
+import RateInput from "./RateInput";
 
 interface Props {
   accounts: AssetAccount[];
@@ -15,15 +16,15 @@ interface Props {
   onChange: (accounts: AssetAccount[]) => void;
 }
 
-function newAccount(): AssetAccount {
+function newAccount(baseCurrency: Currency): AssetAccount {
   return {
     id: `acct-${Date.now()}`,
     label: "",
     assetType: "other",
-    currency: "USD",
+    currency: baseCurrency,
     balance: 0,
     fxRate: 1,
-    fxSource: "manual",
+    fxSource: "live",
     fxAsOf: new Date().toISOString().slice(0, 10),
     expectedReturn: ASSET_TYPES.other.defaultReturn,
     availableFromAge: null,
@@ -32,6 +33,38 @@ function newAccount(): AssetAccount {
 
 export default function AccountList({ accounts, baseCurrency, onChange }: Props) {
   const [collapsed, setCollapsed] = useState(true);
+
+  // §3.3: rates are fetched daily against base currency. A manual override
+  // survives a live fetch — never overwritten here. A failed fetch just
+  // leaves whatever rate is already stored (the offline fallback).
+  useEffect(() => {
+    const today = new Date().toISOString().slice(0, 10);
+    const stale = accounts.filter(
+      (a) => a.currency !== baseCurrency && a.fxSource !== "manual" && a.fxAsOf !== today
+    );
+    if (stale.length === 0) return;
+
+    let cancelled = false;
+    fetch(`/api/fx?base=${baseCurrency}`)
+      .then((res) => res.json())
+      .then((data: { source: string; rates: Record<string, number> | null }) => {
+        if (cancelled || data.source !== "live" || !data.rates) return;
+        onChange(
+          accounts.map((a) =>
+            a.currency !== baseCurrency && a.fxSource !== "manual" && data.rates![a.currency] != null
+              ? { ...a, fxRate: data.rates![a.currency], fxSource: "live", fxAsOf: today }
+              : a
+          )
+        );
+      })
+      .catch(() => {
+        /* offline fallback: keep the last stored rate, never block on this */
+      });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accounts, baseCurrency]);
 
   function update(id: string, patch: Partial<AssetAccount>) {
     onChange(accounts.map((a) => (a.id === id ? { ...a, ...patch } : a)));
@@ -42,7 +75,7 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
   }
 
   function add() {
-    onChange([...accounts, newAccount()]);
+    onChange([...accounts, newAccount(baseCurrency)]);
   }
 
   const total = totalInBase(accounts, baseCurrency);
@@ -143,12 +176,10 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
 
               <div className="space-y-2">
                 <MiniField label="Expected return %/yr">
-                  <input
-                    type="number"
-                    step="0.1"
+                  <RateInput
                     className="profile-input"
-                    value={(account.expectedReturn * 100).toFixed(2)}
-                    onChange={(e) => update(account.id, { expectedReturn: Number(e.target.value) / 100 })}
+                    value={account.expectedReturn}
+                    onChange={(v) => v != null && update(account.id, { expectedReturn: v })}
                   />
                 </MiniField>
                 <MiniField label="Available from age (blank = anytime)">
@@ -168,7 +199,7 @@ export default function AccountList({ accounts, baseCurrency, onChange }: Props)
               <p className="text-xs text-[var(--text-muted)]">
                 {account.currency === baseCurrency
                   ? `${formatCurrency(account.balance, account.currency)} · in base currency`
-                  : `${account.currency} ${account.balance.toLocaleString()} at ${account.fxRate} · ${formatCurrency(toBase(account, baseCurrency), baseCurrency)}`}
+                  : `${account.currency} ${account.balance.toLocaleString()} at ${account.fxRate.toFixed(4)} · ${formatCurrency(toBase(account, baseCurrency), baseCurrency)} · ${account.fxSource === "manual" ? "manual rate" : `live as of ${account.fxAsOf}`}`}
               </p>
             </div>
           ))}

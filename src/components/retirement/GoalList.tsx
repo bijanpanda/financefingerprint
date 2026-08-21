@@ -6,6 +6,7 @@ import { formatCurrency } from "@/utils/currency";
 import { Currency } from "@/types";
 import MiniField from "./MiniField";
 import SectionInfo from "./SectionInfo";
+import RateInput from "./RateInput";
 
 interface Props {
   goals: Goal[];
@@ -156,17 +157,11 @@ export default function GoalList({ goals, currentAge, countryInflationRate, base
 
                 <MiniField label="Rate override % — blank uses the category rate shown alongside">
                   <div className="flex items-center gap-2">
-                    <input
-                      type="number"
-                      step="0.1"
+                    <RateInput
                       placeholder="blank = default"
                       className="profile-input flex-1"
-                      value={goal.inflationRate != null ? (goal.inflationRate * 100).toFixed(1) : ""}
-                      onChange={(e) =>
-                        update(goal.id, {
-                          inflationRate: e.target.value === "" ? null : Number(e.target.value) / 100,
-                        })
-                      }
+                      value={goal.inflationRate}
+                      onChange={(v) => update(goal.id, { inflationRate: v })}
                     />
                     <span className="text-xs text-[var(--text-muted)] whitespace-nowrap">
                       {(rate * 100).toFixed(1)}% {isCountryRate ? "· country rate" : "· category rate"}

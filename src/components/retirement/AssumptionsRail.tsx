@@ -4,6 +4,7 @@ import { useState } from "react";
 import { RetirementPlanDoc } from "@/lib/retirementDb";
 import { deriveAnnualExpense } from "@/utils/retirementFromBudget";
 import { formatCurrency } from "@/utils/currency";
+import RateInput from "./RateInput";
 
 interface Props {
   plan: RetirementPlanDoc;
@@ -104,22 +105,18 @@ export default function AssumptionsRail({ plan, userId, blendedAccountReturn, on
         </Field>
 
         <Field label="Inflation %">
-          <input
-            type="number"
-            step="0.1"
+          <RateInput
             className="profile-input"
-            value={pct(plan.inflationRate)}
-            onChange={(e) => onChange({ inflationRate: Number(e.target.value) / 100 })}
+            value={plan.inflationRate}
+            onChange={(v) => v != null && onChange({ inflationRate: v })}
           />
         </Field>
 
         <Field label="Return, working years %">
-          <input
-            type="number"
-            step="0.1"
+          <RateInput
             className="profile-input"
-            value={pct(plan.returnRatePre)}
-            onChange={(e) => onChange({ returnRatePre: Number(e.target.value) / 100 })}
+            value={plan.returnRatePre}
+            onChange={(v) => v != null && onChange({ returnRatePre: v })}
           />
           {blendedAccountReturn != null && (
             <button
@@ -133,12 +130,10 @@ export default function AssumptionsRail({ plan, userId, blendedAccountReturn, on
         </Field>
 
         <Field label="Return, retirement %">
-          <input
-            type="number"
-            step="0.1"
+          <RateInput
             className="profile-input"
-            value={pct(plan.returnRatePost)}
-            onChange={(e) => onChange({ returnRatePost: Number(e.target.value) / 100 })}
+            value={plan.returnRatePost}
+            onChange={(v) => v != null && onChange({ returnRatePost: v })}
           />
         </Field>
 
