@@ -7,8 +7,6 @@ import SectionInfo from "./SectionInfo";
 
 interface Props {
   versions: PlanVersion[];
-  saving: boolean;
-  onSave: () => void;
   onRestore: (plan: RetirementPlanDoc) => void;
 }
 
@@ -21,7 +19,7 @@ function formatSavedAt(iso: string): string {
   });
 }
 
-export default function VersionHistory({ versions, saving, onSave, onRestore }: Props) {
+export default function VersionHistory({ versions, onRestore }: Props) {
   const [collapsed, setCollapsed] = useState(true);
   const [restoringId, setRestoringId] = useState<string | null>(null);
 
@@ -37,7 +35,7 @@ export default function VersionHistory({ versions, saving, onSave, onRestore }: 
       <button onClick={() => setCollapsed(!collapsed)} className="w-full flex items-center justify-between px-4 py-3.5">
         <span className="profile-label mb-0 flex items-center gap-1.5">
           Version history · {versions.length}
-          <SectionInfo description="Save writes a new baseline you can always come back to. Older versions are never overwritten — the newest is always at the top, and clicking Restore loads it back into the editor." />
+          <SectionInfo description="The Save button at the top of the page writes a new baseline you can always come back to. Older versions are never overwritten — the newest is always at the top, and clicking Restore loads it back into the editor." />
         </span>
         <svg
           className={`w-4 h-4 text-slate-400 transition-transform ${collapsed ? "" : "rotate-180"}`}
@@ -51,14 +49,6 @@ export default function VersionHistory({ versions, saving, onSave, onRestore }: 
 
       {!collapsed && (
         <div className="px-4 pb-4 space-y-3">
-          <button
-            onClick={onSave}
-            disabled={saving}
-            className="w-full py-2.5 rounded-xl text-sm font-semibold bg-[var(--bg-success)] text-white hover:bg-slate-700 transition-colors disabled:opacity-50"
-          >
-            {saving ? "Saving…" : "Save as new version"}
-          </button>
-
           {versions.length === 0 ? (
             <p className="text-xs text-[var(--text-muted)]">No saved versions yet — your edits so far are a draft.</p>
           ) : (

@@ -219,6 +219,13 @@ export default function RetirementPage() {
             <p className="text-[15px] font-semibold text-slate-800 truncate">Retirement Runway</p>
             <p className="text-[12px] text-slate-400">Will your money outlive you?</p>
           </div>
+          <button
+            onClick={handleSaveVersion}
+            disabled={savingVersion}
+            className="shrink-0 px-4 h-9 rounded-lg text-sm font-semibold bg-[var(--bg-success)] text-white hover:bg-slate-700 transition-colors disabled:opacity-50"
+          >
+            {savingVersion ? "Saving…" : "Save"}
+          </button>
         </header>
 
         <div className="flex-1 overflow-y-auto">
@@ -238,12 +245,7 @@ export default function RetirementPage() {
             </main>
 
             <aside className="w-full lg:w-[320px] shrink-0 order-2 lg:order-1 px-4 lg:px-4 py-5 space-y-4 border-b lg:border-b-0 lg:border-r border-[var(--border-default)]">
-              <VersionHistory
-                versions={versions}
-                saving={savingVersion}
-                onSave={handleSaveVersion}
-                onRestore={handleRestore}
-              />
+              <VersionHistory versions={versions} onRestore={handleRestore} />
               <AssumptionsRail
                 plan={plan}
                 userId={user!.uid}
