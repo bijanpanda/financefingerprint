@@ -22,14 +22,29 @@ export const CURRENCIES: { value: Currency; label: string }[] = [
   { value: "AED", label: "AED - UAE Dirham" },
 ];
 
+// Intl.NumberFormat construction is expensive — measured as a real INP
+// blocker on the retirement page, which formats hundreds of figures
+// (ledger rows, chart ticks, solve-for tiles) on every render. One
+// formatter per currency, built once and reused.
+const formatterCache = new Map<Currency, Intl.NumberFormat>();
+
+function getFormatter(currency: Currency): Intl.NumberFormat {
+  let formatter = formatterCache.get(currency);
+  if (!formatter) {
+    const config = currencyConfig[currency];
+    formatter = new Intl.NumberFormat(config.locale, {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2,
+    });
+    formatterCache.set(currency, formatter);
+  }
+  return formatter;
+}
+
 export function formatCurrency(amount: number, currency: Currency): string {
-  const config = currencyConfig[currency];
-  return new Intl.NumberFormat(config.locale, {
-    style: "currency",
-    currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  return getFormatter(currency).format(amount);
 }
 
 export function getCurrencySymbol(currency: Currency): string {
